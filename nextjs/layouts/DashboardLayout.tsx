@@ -53,6 +53,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
             <div className="px-4 text-xs font-semibold text-slate-600 uppercase tracking-wider mb-2 mt-8">Admin</div>
             <SidebarItem icon={Settings} label="Strategy Builder" href="/strategy" />
             <SidebarItem icon={ShieldCheck} label="Back Office" href="/admin/backoffice" />
+            <SidebarItem icon={Cpu} label="DAI-Lab Index" href="/dai-lab" />
           </nav>
 
           <div className="p-4 border-t border-slate-800">
