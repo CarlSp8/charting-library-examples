@@ -79,6 +79,12 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                     <span className="text-emerald-400 text-sm font-mono">BTC +1.2%</span>
                 </div>
                 <div className="flex items-center space-x-4">
+                     <button
+                        onClick={() => window.open('/overlay?transparent=true', 'ApSciOS Overlay', 'width=1920,height=1080')}
+                        className="px-3 py-1.5 text-xs font-medium bg-purple-600/20 text-purple-400 border border-purple-600/50 rounded hover:bg-purple-600/30 transition-colors hidden md:block"
+                     >
+                        LAUNCH OBS OVERLAY
+                     </button>
                      <button className="px-3 py-1.5 text-xs font-medium bg-blue-600/20 text-blue-400 border border-blue-600/50 rounded hover:bg-blue-600/30 transition-colors">
                         CONNECT WALLET
                      </button>
