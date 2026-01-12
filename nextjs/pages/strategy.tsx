@@ -3,15 +3,16 @@ import DashboardLayout from "../layouts/DashboardLayout";
 import dynamic from 'next/dynamic';
 import Head from "next/head";
 import { useState } from "react";
-import { Settings, Code } from "lucide-react";
+import { Settings, Code, BookOpen } from "lucide-react";
 import clsx from "clsx";
 
 // Dynamic imports
 const StrategyBuilder = dynamic(() => import('../components/Admin/StrategyBuilder'), { ssr: false, loading: () => <p className="text-slate-500">Loading Visual Builder...</p> });
 const OpenSourceStrategyBuilder = dynamic(() => import('../components/Admin/OpenSourceStrategyBuilder'), { ssr: false, loading: () => <p className="text-slate-500">Loading Open Source Builder...</p> });
+const WealthScriptEducation = dynamic(() => import('../components/Admin/WealthScriptEducation'), { ssr: false, loading: () => <p className="text-slate-500">Loading Education...</p> });
 
 const StrategyPage: NextPage = () => {
-    const [builderType, setBuilderType] = useState<'standard' | 'wealthlab'>('standard');
+    const [builderType, setBuilderType] = useState<'standard' | 'wealthlab' | 'education'>('standard');
 
     return (
         <DashboardLayout>
@@ -37,7 +38,7 @@ const StrategyPage: NextPage = () => {
                             )}
                         >
                             <Settings size={16} />
-                            Standard Builder
+                            Standard
                         </button>
                         <button
                             onClick={() => setBuilderType('wealthlab')}
@@ -49,13 +50,27 @@ const StrategyPage: NextPage = () => {
                             )}
                         >
                             <Code size={16} />
-                            Open Source (MIT / WealthLab)
+                            Code / WealthLab
+                        </button>
+                        <button
+                            onClick={() => setBuilderType('education')}
+                            className={clsx(
+                                "px-4 py-2 rounded-md text-sm font-medium transition-all flex items-center gap-2",
+                                builderType === 'education'
+                                    ? "bg-slate-800 text-purple-400 shadow-sm border border-slate-700/50"
+                                    : "text-slate-400 hover:text-slate-200 hover:bg-slate-800/50"
+                            )}
+                        >
+                            <BookOpen size={16} />
+                            Learn
                         </button>
                     </div>
                 </div>
 
                 <div className="animate-in fade-in duration-500">
-                    {builderType === 'standard' ? <StrategyBuilder /> : <OpenSourceStrategyBuilder />}
+                    {builderType === 'standard' && <StrategyBuilder />}
+                    {builderType === 'wealthlab' && <OpenSourceStrategyBuilder />}
+                    {builderType === 'education' && <WealthScriptEducation />}
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4">

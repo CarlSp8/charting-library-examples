@@ -1,9 +1,103 @@
 import React, { useState } from 'react';
-import { Code, Play, BarChart2, Layers, Download, Save, FolderOpen } from 'lucide-react';
+import { Code, Play, Layers, Save, FolderOpen, Globe } from 'lucide-react';
 import clsx from 'clsx';
+
+type Language = 'csharp' | 'python' | 'javascript';
 
 export default function OpenSourceStrategyBuilder() {
   const [mode, setMode] = useState<'block' | 'code'>('block');
+  const [language, setLanguage] = useState<Language>('csharp');
+
+  const getBoilerplate = (lang: Language) => {
+      switch(lang) {
+          case 'python':
+              return `import pandas as pd
+import talib
+from wealthlab.strategy import Strategy
+
+class MyStrategy(Strategy):
+    def initialize(self, bars):
+        self.rsi = talib.RSI(bars['close'], timeperiod=14)
+
+    def execute(self, bars, idx):
+        if not self.has_open_position():
+            # Buy Rule
+            if self.rsi[idx] < 30:
+                self.buy_market(label="RSI Oversold")
+        else:
+            # Sell Rule
+            if self.rsi[idx] > 70:
+                self.sell_market(label="RSI Overbought")`;
+
+          case 'javascript':
+              return `const { Strategy, Indicators } = require('wealthlab-core');
+
+class MyStrategy extends Strategy {
+    initialize(bars) {
+        this.rsi = Indicators.RSI(bars.close, 14);
+    }
+
+    execute(bars, idx) {
+        if (!this.hasOpenPosition()) {
+            // Buy Rule
+            if (this.rsi[idx] < 30) {
+                this.buyMarket({ label: "RSI Oversold" });
+            }
+        } else {
+            // Sell Rule
+            if (this.rsi[idx] > 70) {
+                this.sellMarket({ label: "RSI Overbought" });
+            }
+        }
+    }
+}`;
+
+          default: // csharp
+              return `using WealthLab.Backtest;
+using System;
+using WealthLab.Core;
+using WealthLab.Indicators;
+using System.Drawing;
+using System.Collections.Generic;
+
+namespace WealthLab.Strategies
+{
+    public class MyStrategy : UserStrategyBase
+    {
+        //create indicators and other objects here, that is safe to access from multiple threads
+        public override void Initialize(BarHistory bars)
+        {
+            rsi = RSI.Series(bars.Close, 14);
+            PlotStopsAndLimits(3);
+        }
+
+        //execute the strategy
+        public override void Execute(BarHistory bars, int idx)
+        {
+            if (!HasOpenPosition(bars, idx))
+            {
+                // Buy Rule
+                if (rsi[idx] < 30)
+                {
+                    PlaceTrade(bars, TransactionType.Buy, TransactionType.Market, 0, 0, "RSI Oversold");
+                }
+            }
+            else
+            {
+                // Sell Rule
+                if (rsi[idx] > 70)
+                {
+                    PlaceTrade(bars, TransactionType.Sell, TransactionType.Market, 0, 0, "RSI Overbought");
+                }
+            }
+        }
+
+        //declare private variables below
+        RSI rsi;
+    }
+}`;
+      }
+  };
 
   return (
     <div className="bg-slate-900 border border-slate-800 rounded-xl flex flex-col h-[600px] overflow-hidden">
@@ -21,11 +115,28 @@ export default function OpenSourceStrategyBuilder() {
                     onClick={() => setMode('code')}
                     className={clsx("px-3 py-1.5 rounded text-xs font-medium transition-colors flex items-center gap-2", mode === 'code' ? "bg-slate-700 text-white shadow-sm" : "text-slate-400 hover:text-slate-200")}
                 >
-                    <Code size={14} /> C# Code
+                    <Code size={14} /> Code Editor
                 </button>
              </div>
+
+             {/* Language Selector (Only visible in Code mode) */}
+             {mode === 'code' && (
+                 <div className="flex items-center gap-2 animate-in fade-in slide-in-from-left-2">
+                    <span className="text-slate-500 text-xs">Language:</span>
+                    <select
+                        value={language}
+                        onChange={(e) => setLanguage(e.target.value as Language)}
+                        className="bg-slate-800 border-none rounded text-xs text-slate-200 py-1 pl-2 pr-8 focus:ring-1 focus:ring-blue-500"
+                    >
+                        <option value="csharp">C# (WealthScript)</option>
+                        <option value="python">Python (Pandas)</option>
+                        <option value="javascript">JavaScript (Node.js)</option>
+                    </select>
+                 </div>
+             )}
+
              <div className="h-6 w-px bg-slate-800"></div>
-             <h3 className="text-slate-200 font-semibold text-sm">MIT WealthLab Variant (Open Source)</h3>
+             <h3 className="text-slate-200 font-semibold text-sm hidden md:block">MIT WealthLab Variant (Open Source)</h3>
         </div>
         <div className="flex gap-2">
             <button className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded text-xs font-medium flex items-center gap-2 border border-slate-700">
@@ -89,50 +200,10 @@ export default function OpenSourceStrategyBuilder() {
                 </div>
             ) : (
                 <div className="h-full font-mono text-xs text-slate-300">
-                    <pre className="language-csharp">
-{`using WealthLab.Backtest;
-using System;
-using WealthLab.Core;
-using WealthLab.Indicators;
-using System.Drawing;
-using System.Collections.Generic;
-
-namespace WealthLab.Strategies
-{
-    public class MyStrategy : UserStrategyBase
-    {
-        //create indicators and other objects here, that is safe to access from multiple threads
-        public override void Initialize(BarHistory bars)
-        {
-            rsi = RSI.Series(bars.Close, 14);
-            PlotStopsAndLimits(3);
-        }
-
-        //execute the strategy
-        public override void Execute(BarHistory bars, int idx)
-        {
-            if (!HasOpenPosition(bars, idx))
-            {
-                // Buy Rule
-                if (rsi[idx] < 30)
-                {
-                    PlaceTrade(bars, TransactionType.Buy, TransactionType.Market, 0, 0, "RSI Oversold");
-                }
-            }
-            else
-            {
-                // Sell Rule
-                if (rsi[idx] > 70)
-                {
-                    PlaceTrade(bars, TransactionType.Sell, TransactionType.Market, 0, 0, "RSI Overbought");
-                }
-            }
-        }
-
-        //declare private variables below
-        RSI rsi;
-    }
-}`}
+                    <pre className={clsx(
+                        "language-" + (language === 'csharp' ? 'csharp' : language === 'python' ? 'python' : 'javascript')
+                    )}>
+{getBoilerplate(language)}
                     </pre>
                 </div>
             )}
