@@ -1,0 +1,6 @@
+transformers
+accelerate
+torch
+triton==3.4
+kernels
+openai-harmony
